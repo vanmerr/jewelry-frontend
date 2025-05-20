@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import collections from "../services/collections";
 import CollectionCard from "../components/CollectionCard";
 import banner from "../assets/banner.jpg";
-import Products from "./Products";
 
 export default function Home() {
   return (
@@ -15,7 +14,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black opacity-70"></div>
         <div className="relative z-10 text-center text-white">
           <h1 className="font-serif text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
-            Handcrafted Luxury, Timeless Desire
+              Handcrafted Luxury, Timeless Desire
           </h1>
           <p className="mb-8 text-lg md:text-2xl font-light">
             Discover the elegance of artisan jewelry
@@ -34,7 +33,9 @@ export default function Home() {
           Featured Collection
         </h2>
         {(() => {
-          const featuredConllection = collections.filter((p) => p.status === "featured").slice(0, 6);
+          const featuredConllection = collections
+            .filter((p) => p.status === "featured")
+            .slice(0, 6);
           return (
             <div
               className={`
