@@ -6,11 +6,15 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Link } from "react-router-dom";
+import AddToCartModal from "./AddToCartModal";
+import { useCart } from "../contexts/CartContext";
 
-export default function ProductCard({ product, onAddToCart }) {
+export default function ProductCard({ product }) {
+  const { addToCart } = useCart();
   const [imgIdx, setImgIdx] = useState(0);
   const [slideDir, setSlideDir] = useState("right");
   const [liked, setLiked] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const images =
     product.images && product.images.length > 0
@@ -158,7 +162,7 @@ export default function ProductCard({ product, onAddToCart }) {
               className="hidden group-hover:flex items-center gap-1 bg-gradient-to-br cursor-pointer from-[#fc00ff] to-[#00dbde] text-white px-3 py-1 rounded hover:scale-105 transition"
               onClick={(e) => {
                 e.preventDefault();
-                onAddToCart(product);
+                setShowModal(true);
               }}
               title="Add to cart"
               type="button"
@@ -183,6 +187,12 @@ export default function ProductCard({ product, onAddToCart }) {
           </span>
         </div>
       </Link>
+      <AddToCartModal
+        open={showModal}
+        product={product}
+        onClose={() => setShowModal(false)}
+        onAdd={addToCart}
+      />
     </div>
   );
 }

@@ -23,11 +23,21 @@ export function CartProvider({ children }) {
   };
 
   const addToCart = (item) => {
-    const exists = cart.find((p) => p.id === item.id);
+    // Match by id, selectedColor, selectedSize
+    const exists = cart.find(
+      (p) =>
+        p.id === item.id &&
+        (p.selectedColor || "") === (item.selectedColor || "") &&
+        (p.selectedSize || "") === (item.selectedSize || "")
+    );
     let updatedCart;
     if (exists) {
       updatedCart = cart.map((p) =>
-        p.id === item.id ? { ...p, quantity: (p.quantity || 1) + 1 } : p
+        p.id === item.id &&
+        (p.selectedColor || "") === (item.selectedColor || "") &&
+        (p.selectedSize || "") === (item.selectedSize || "")
+          ? { ...p, quantity: (p.quantity || 1) + 1 }
+          : p
       );
     } else {
       updatedCart = [...cart, { ...item, quantity: 1 }];

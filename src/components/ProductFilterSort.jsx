@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import { useLocation } from "react-router-dom";
 
 const STATUSES = [
   { value: "", label: "All" },
@@ -26,20 +27,41 @@ export default function ProductFilterSort({
   onSortChange,
   onStatusChange,
   onCategoriesChange,
+  collectionId = null,
 }) {
+  const location = useLocation();
+  const isExplorePage = location.pathname === "/explore";
   const [sort, setSort] = useState(selectedSort || "");
   const [status, setStatus] = useState(selectedStatus || "");
   const [cats, setCats] = useState(selectedCategories || []);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(() => {
+    return sessionStorage.getItem("filterPanelShown") ? false : true;
+  });
+
+  useEffect(() => {
+    if (open && !sessionStorage.getItem("filterPanelShown")) {
+      const timer = setTimeout(() => {
+        setOpen(false);
+        sessionStorage.setItem("filterPanelShown", "1");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
 
   const handleSort = (e) => {
-    setSort(e.target.value);
-    onSortChange && onSortChange(e.target.value);
+    const value = e.target.value;
+    setSort(value);
+    if (onSortChange) {
+      onSortChange(value);
+    }
   };
 
   const handleStatus = (e) => {
-    setStatus(e.target.value);
-    onStatusChange && onStatusChange(e.target.value);
+    const value = e.target.value;
+    setStatus(value);
+    if (onStatusChange) {
+      onStatusChange(value);
+    }
   };
 
   const handleCategory = (e) => {
@@ -51,12 +73,22 @@ export default function ProductFilterSort({
       newCats = cats.filter((c) => c !== value);
     }
     setCats(newCats);
-    onCategoriesChange && onCategoriesChange(newCats);
+    if (onCategoriesChange) {
+      onCategoriesChange(newCats);
+    }
   };
+
+  useEffect(() => {
+    setSort("");
+    setStatus("");
+    setCats([]);
+    if (onSortChange) onSortChange("");
+    if (onStatusChange) onStatusChange("");
+    if (onCategoriesChange) onCategoriesChange([]);
+  }, [location.pathname, collectionId]);
 
   return (
     <div>
-      {/* Filter Toggle Button */}
       <button
         className="fixed right-2 bottom-[25vh] z-50 bg-gradient-to-br from-[#fc00ff] to-[#00dbde] text-white p-3 rounded-full shadow-lg hover:scale-110 transition-all"
         onClick={() => setOpen((v) => !v)}
@@ -65,9 +97,8 @@ export default function ProductFilterSort({
       >
         {open ? <CloseOutlinedIcon fontSize="medium" /> : <FilterAltOutlinedIcon fontSize="medium" />}
       </button>
-      {/* Filter Panel */}
       <div
-        className={`fixed right-20  max-sm:right-15 bottom-[15vh] z-60 min-w-[260px] max-w-[90vw] bg-white/95 border border-gray-200 rounded-xl shadow-2xl p-5 transition-all duration-300
+        className={`fixed right-20 max-sm:right-15 bottom-[15vh] z-60 min-w-[260px] max-w-[90vw] bg-white/95 border border-gray-200 rounded-xl shadow-2xl p-5 transition-all duration-300
         ${open ? "opacity-100 pointer-events-auto translate-x-0" : "opacity-0 pointer-events-none translate-x-20"}
         `}
         style={{ backdropFilter: "blur(8px)" }}
@@ -87,19 +118,23 @@ export default function ProductFilterSort({
               ))}
             </select>
           </div>
-          {/* Status filter */}
-          <div className="flex items-center gap-2">
-            <label className="w-20 font-semibold text-gray-700">Status</label>
-            <select
-              value={status}
-              onChange={handleStatus}
-              className="w-48 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
-            >
-              {STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
-          </div>
+
+          {/* Status filter - chỉ hiển thị ở trang Explore */}
+          {isExplorePage && (
+            <div className="flex items-center gap-2">
+              <label className="w-20 font-semibold text-gray-700">Status</label>
+              <select
+                value={status}
+                onChange={handleStatus}
+                className="w-48 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-pink-300 transition"
+              >
+                {STATUSES.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Category multi-select */}
           <div>
             <label className="mr-2 font-semibold text-gray-700">Category</label>

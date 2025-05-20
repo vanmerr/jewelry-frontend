@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import products from "../services/products";
 import ProductGallery from "../components/ProductGallery";
 import { useState, useEffect, useRef } from "react";
@@ -6,6 +6,7 @@ import { useCart } from "../contexts/CartContext";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import FavoriteSharpIcon from "@mui/icons-material/FavoriteSharp";
 import ProductCard from "../components/ProductCard";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -77,17 +78,49 @@ export default function ProductDetail() {
     return <div className="p-8 text-center">Product not found.</div>;
 
   return (
-    <>
-      <div className="max-w-5xl mx-auto mt-[56px] py-12 px-4 flex flex-col md:flex-row gap-12">
+    <div className="max-w-5xl mx-auto mt-[56px] py-12 px-4">
+      <Breadcrumbs
+        aria-label="breadcrumb"
+        className="flex justify-center items-center h-10"
+      >
+        <Link
+          to="/"
+          className="relative text-gray-400 hover:text-gray-800 font-light group"
+        >
+          <span> Home</span>
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-br from-[#fc00ff] to-[#00dbde] transition-all group-hover:w-full"></span>
+        </Link>
+        <Link
+          to="/collections"
+          className="relative text-gray-400 hover:text-gray-800 font-light group"
+        >
+          <span>All Collection</span>
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-br from-[#fc00ff] to-[#00dbde] transition-all group-hover:w-full"></span>
+        </Link>
+
+        <span className="text-gray-800">{product.name}</span>
+      </Breadcrumbs>
+      <div className="max-w-5xl mx-auto px-4 mt-2 flex flex-col md:flex-row gap-12">
         {/* Gallery */}
         <div className="flex-1 flex flex-col gap-4 relative">
           <ProductGallery image={selectedImage} />
+          <span className="absolute right-2 top-2 bg-gradient-to-br from-[#fc00ff]/70 to-[#00dbde]/70 text-xs font-bold px-2 py-1 rounded shadow-lg z-20 animate-bounce">
+            <FavoriteSharpIcon className="text-[#fc00ff]" />
+          </span>
           {images.length > 1 && (
             <div className="flex items-center justify-center gap-2 mt-2 relative">
               {/* Prev button */}
               {canPrev && (
                 <button
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gradient-to-br hover:from-[#fc00ff] hover:to-[#00dbde] hover:text-white border border-gray-300 text-gray-700 transition absolute left-12 top-1/2 -translate-y-1/2 z-10"
+                  className="
+                    w-7 h-7 md:w-8 md:h-8 lg:w-10 lg:h-10
+                    flex items-center justify-center rounded-full
+                    bg-gray-100 hover:bg-gradient-to-br hover:from-[#fc00ff] hover:to-[#00dbde] hover:text-white
+                    border border-gray-300 text-gray-700 transition
+                    absolute left-2 md:left-8 lg:left-10
+                    top-1/2 -translate-y-1/2 z-20
+                    shadow
+                  "
                   onClick={() => setThumbStart((s) => Math.max(0, s - 1))}
                   aria-label="Previous thumbnails"
                   type="button"
@@ -120,7 +153,15 @@ export default function ProductDetail() {
               {/* Next button */}
               {canNext && (
                 <button
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gradient-to-br  hover:text-white hover:from-[#fc00ff] hover:to-[#00dbde] border border-gray-300 text-gray-700 transition absolute right-12 top-1/2 -translate-y-1/2 z-10"
+                  className="
+                    w-7 h-7 md:w-8 md:h-8 lg:w-10 lg:h-10
+                    flex items-center justify-center rounded-full
+                    bg-gray-100 hover:bg-gradient-to-br hover:from-[#fc00ff] hover:to-[#00dbde] hover:text-white
+                    border border-gray-300 text-gray-700 transition
+                    absolute right-2 md:right-8 lg:right-10
+                    top-1/2 -translate-y-1/2 z-20
+                    shadow
+                  "
                   onClick={() =>
                     setThumbStart((s) =>
                       Math.min(images.length - maxThumbs, s + 1)
@@ -136,7 +177,7 @@ export default function ProductDetail() {
           )}
         </div>
         {/* Info */}
-        <div className="flex-1 flex flex-col gap-6">
+        <div className="relative flex-1 flex flex-col gap-6">
           <h1 className="font-serif text-3xl font-bold text-black">
             {product.name}
           </h1>
@@ -156,7 +197,7 @@ export default function ProductDetail() {
             </div>
             {isDescClamped && (
               <button
-                className="absolute bottom-2 right-4 text-sm text-[#fc00ff] font-semibold bg-white bg-opacity-80 px-2 py-1 rounded hover:underline"
+                className="absolute bottom-2 right-4 text-sm text-white font-semibold bg-gray-600/80 bg-opacity-80 px-2 py-1 rounded hover:underline"
                 onClick={() => setShowDescModal(true)}
                 type="button"
               >
@@ -166,7 +207,7 @@ export default function ProductDetail() {
           </div>
           {/* Modal hiển thị đầy đủ mô tả */}
           {showDescModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 bg-opacity-40">
               <div className="bg-white max-w-lg w-full rounded shadow-lg p-6 relative">
                 <button
                   className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl"
@@ -176,8 +217,22 @@ export default function ProductDetail() {
                 >
                   <CloseOutlinedIcon />
                 </button>
-                <div className="text-lg text-gray-700 whitespace-pre-line">
-                  {product.description}
+                <div
+                  className="text-lg text-gray-700 whitespace-pre-line max-h-[60vh] overflow-y-auto"
+                  style={{
+                    scrollbarWidth: "none", // Firefox
+                    msOverflowStyle: "none", // IE 10+
+                  }}
+                >
+                  <style>
+                    {`
+                      /* Hide scrollbar for Chrome, Safari and Opera */
+                      .hide-scrollbar::-webkit-scrollbar {
+                        display: none;
+                      }
+                    `}
+                  </style>
+                  <div className="hide-scrollbar">{product.description}</div>
                 </div>
               </div>
             </div>
@@ -239,23 +294,26 @@ export default function ProductDetail() {
           <div className="flex gap-4 mt-4">
             <button
               className="bg-black flex-1 text-white hover:bg-gradient-to-br from-[#fc00ff] to-[#00dbde] px-6 py-3 rounded font-semibold transition hover:bg-pink-600"
-              onClick={() =>
+              onClick={() => {
+                if (sizes?.length && !selectedSize) {
+                  alert("Please select size before adding to cart!");
+                  return;
+                }
                 addToCart({
                   ...product,
+                  selectedColor, // if not selected, will be "" (default)
                   selectedSize,
-                  selectedColor,
-                })
-              }
+                });
+              }}
             >
               Add to Cart
             </button>
             <button
-              className="flex items-center gap-2 border border-gray-300 rounded px-6 py-3 font-semibold text-gray-700 hover:bg-gradient-to-br hover:from-[#fc00ff] hover:to-[#00dbde] hover:text-white transition"
+              className="flex items-center gap-2 border border-gray-300 rounded px-4 py-2 font-semibold text-gray-700 hover:bg-gradient-to-br hover:from-[#fc00ff] hover:to-[#00dbde] hover:text-white transition"
               type="button"
               // onClick={handleFavorite} // Thêm hàm xử lý nếu cần
             >
               <FavoriteSharpIcon className="text-[#fc00ff]" />
-              Yêu thích
             </button>
           </div>
         </div>
@@ -289,26 +347,42 @@ export default function ProductDetail() {
             className="w-1/3 object-cover"
           />
           <div className="p-8 flex-1 flex flex-col justify-center">
-            <h3 className="font-bold text-xl mb-2 tracking-wide">GIFT WRAPPING</h3>
+            <h3 className="font-bold text-xl mb-2 tracking-wide">
+              GIFT WRAPPING
+            </h3>
             <p className="mb-4 text-gray-700">
-              Send your presents in our signature packaging with a personalised greetings card included.
+              Send your presents in our signature packaging with a personalised
+              greetings card included.
             </p>
-            <a href="#" className="underline underline-offset-4 text-black font-medium hover:text-[#fc00ff] w-fit">
+            <a
+              href="#"
+              className="underline underline-offset-4 text-black font-medium hover:text-[#fc00ff] w-fit"
+            >
               Read More
             </a>
           </div>
         </div>
         {/* Shipping / Return */}
         <div className="flex flex-col justify-center bg-[#fafafa] rounded shadow p-8">
-          <h3 className="font-bold text-xl mb-2 tracking-wide">SHIPPING / RETURN</h3>
+          <h3 className="font-bold text-xl mb-2 tracking-wide">
+            SHIPPING / RETURN
+          </h3>
           <p className="mb-4 text-gray-700">
-            We offer different delivery options. Choose the one you prefer at the checkout. You may return or exchange your creation within 30 days.
+            We offer different delivery options. Choose the one you prefer at
+            the checkout. You may return or exchange your creation within 30
+            days.
           </p>
           <div className="flex gap-8">
-            <a href="#" className="underline underline-offset-4 text-black font-medium hover:text-[#fc00ff] w-fit">
+            <a
+              href="#"
+              className="underline underline-offset-4 text-black font-medium hover:text-[#fc00ff] w-fit"
+            >
               View Shipping
             </a>
-            <a href="#" className="underline underline-offset-4 text-black font-medium hover:text-[#fc00ff] w-fit">
+            <a
+              href="#"
+              className="underline underline-offset-4 text-black font-medium hover:text-[#fc00ff] w-fit"
+            >
               View Return
             </a>
           </div>
@@ -322,11 +396,16 @@ export default function ProductDetail() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {products
-            .filter((p) => p.category === product.category && p.id !== product.id)
+            .filter(
+              (p) => p.category === product.category && p.id !== product.id
+            )
             .slice(0, 3)
             .map((suggestedProduct) => (
               <div key={suggestedProduct.id}>
-                <ProductCard product={suggestedProduct} onAddToCart={addToCart} />
+                <ProductCard
+                  product={suggestedProduct}
+                  onAddToCart={addToCart}
+                />
               </div>
             ))}
         </div>
@@ -338,34 +417,95 @@ export default function ProductDetail() {
           {/* Complimentary Delivery */}
           <div className="flex flex-col items-center">
             {/* Icon */}
-            <svg width="48" height="48" fill="none" stroke="currentColor" strokeWidth="2" className="mb-4" viewBox="0 0 48 48">
-              <rect x="8" y="12" width="32" height="24" rx="2" stroke="currentColor" />
+            <svg
+              width="48"
+              height="48"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="mb-4"
+              viewBox="0 0 48 48"
+            >
+              <rect
+                x="8"
+                y="12"
+                width="32"
+                height="24"
+                rx="2"
+                stroke="currentColor"
+              />
               <circle cx="24" cy="32" r="1.5" fill="currentColor" />
             </svg>
-            <span className="text-lg font-medium tracking-wide text-center">COMPLIMENTARY DELIVERY</span>
+            <span className="text-lg font-medium tracking-wide text-center">
+              COMPLIMENTARY DELIVERY
+            </span>
           </div>
           {/* Easy Return or Exchange */}
           <div className="flex flex-col items-center">
             {/* Icon */}
-            <svg width="48" height="48" fill="none" stroke="currentColor" strokeWidth="2" className="mb-4" viewBox="0 0 48 48">
-              <rect x="8" y="12" width="32" height="24" rx="2" stroke="currentColor" />
-              <path d="M24 28l-4-4 4-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M20 24h8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg
+              width="48"
+              height="48"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="mb-4"
+              viewBox="0 0 48 48"
+            >
+              <rect
+                x="8"
+                y="12"
+                width="32"
+                height="24"
+                rx="2"
+                stroke="currentColor"
+              />
+              <path
+                d="M24 28l-4-4 4-4"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M20 24h8"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
-            <span className="text-lg font-medium tracking-wide text-center">EASY RETURN OR EXCHANGE</span>
+            <span className="text-lg font-medium tracking-wide text-center">
+              EASY RETURN OR EXCHANGE
+            </span>
           </div>
           {/* Free Gift Wrapping */}
           <div className="flex flex-col items-center">
             {/* Icon */}
-            <svg width="48" height="48" fill="none" stroke="currentColor" strokeWidth="2" className="mb-4" viewBox="0 0 48 48">
-              <rect x="10" y="14" width="28" height="20" rx="2" stroke="currentColor" />
+            <svg
+              width="48"
+              height="48"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="mb-4"
+              viewBox="0 0 48 48"
+            >
+              <rect
+                x="10"
+                y="14"
+                width="28"
+                height="20"
+                rx="2"
+                stroke="currentColor"
+              />
               <path d="M10 14l14 12 14-12" stroke="currentColor" />
               <circle cx="24" cy="26" r="1.5" fill="currentColor" />
             </svg>
-            <span className="text-lg font-medium tracking-wide text-center">FREE GIFT WRAPPING</span>
+            <span className="text-lg font-medium tracking-wide text-center">
+              FREE GIFT WRAPPING
+            </span>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
