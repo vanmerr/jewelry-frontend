@@ -91,19 +91,19 @@ const ShippingBag = () => {
                     {item.selectedSize && <p className="text-sm text-gray-500">Size: {item.selectedSize}</p>}
                     <div className="flex items-center justify-between sm:justify-start space-x-4 mt-4">
                       <div className="flex items-center space-x-4">
-                        <button 
+                      <button 
                           onClick={() => handleUpdateQuantity(item, -1)}
                           className="p-2 rounded-full hover:bg-gradient-to-br hover:from-[#fc00ff]/20 hover:to-[#00dbde]/20 transition-all duration-300"
-                        >
-                          <Minus className="w-4 h-4 text-gray-600" />
-                        </button>
+                      >
+                        <Minus className="w-4 h-4 text-gray-600" />
+                      </button>
                         <span className="text-gray-900 font-medium">{item.quantity || 1}</span>
-                        <button 
+                      <button 
                           onClick={() => handleUpdateQuantity(item, 1)}
                           className="p-2 rounded-full hover:bg-gradient-to-br hover:from-[#fc00ff]/20 hover:to-[#00dbde]/20 transition-all duration-300"
-                        >
-                          <Plus className="w-4 h-4 text-gray-600" />
-                        </button>
+                      >
+                        <Plus className="w-4 h-4 text-gray-600" />
+                      </button>
                       </div>
                       <button 
                         onClick={() => handleRemoveItem(item)}

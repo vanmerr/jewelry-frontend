@@ -64,7 +64,9 @@ export default function ProductCard({ product }) {
         cardEntry?.isIntersecting
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-10"
-      }`}
+      }
+          ${showModal ? "z-9999" : "z-0"}`}
+      
     >
       {/* Gradient border effect */}
       <div className="absolute inset-0 w-full h-full rounded-2xl z-0 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] bg-gradient-to-br from-[#e81cff] to-[#40c9ff] group-hover:rotate-[-180deg]" />
