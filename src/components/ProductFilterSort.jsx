@@ -139,9 +139,9 @@ export default function ProductFilterSort({
           <div>
             <label className="mr-2 font-semibold text-gray-700">Category</label>
             <div className="flex flex-wrap gap-2 mt-1">
-              {categories.map((cat) => (
+              {categories.map((cat, idx) => (
                 <label
-                  key={cat}
+                  key={cat + '-' + idx}
                   className="inline-flex items-center gap-1 bg-gradient-to-br from-[#fc00ff]/10 to-[#00dbde]/10 px-2 py-1 rounded-full border border-gray-200 text-gray-700 text-sm cursor-pointer hover:bg-pink-50 transition"
                 >
                   <input

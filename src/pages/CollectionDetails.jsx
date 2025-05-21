@@ -9,6 +9,8 @@ import WhatshotOutlinedIcon from "@mui/icons-material/WhatshotOutlined";
 import ProductFilterSort from "../components/ProductFilterSort";
 import ProductList from "../components/ProductList";
 import { useState } from "react";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
+
 
 export default function CollectionDetails() {
   const { id } = useParams();
@@ -38,6 +40,30 @@ export default function CollectionDetails() {
       return 0;
     });
 
+  const [bannerRef, bannerEntry] = useIntersectionObserver({
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
+
+  const [infoRef, infoEntry] = useIntersectionObserver({
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
+
+  const [productsRef, productsEntry] = useIntersectionObserver({
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
+
+  const [filterRef, filterEntry] = useIntersectionObserver({
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
+
   if (!collection) {
     return (
       <div className="flex justify-center items-center min-h-[200px] text-gray-500 text-lg">
@@ -49,7 +75,12 @@ export default function CollectionDetails() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 mt-[56px]">
       {/* Collection Banner */}
-      <div className="relative w-full h-[300px] md:h-[400px] rounded-2xl overflow-hidden mb-8 shadow-xl">
+      <div 
+        ref={bannerRef}
+        className={`relative w-full h-[300px] md:h-[400px] rounded-2xl overflow-hidden mb-8 shadow-xl
+          ${bannerEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+        `}
+      >
         <img
           src={collection.image}
           alt={collection.name}
@@ -88,7 +119,12 @@ export default function CollectionDetails() {
       </div>
 
       {/* Collection Info */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 mb-12">
+      <div 
+        ref={infoRef}
+        className={`grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 mb-12
+          ${infoEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+        `}
+      >
         <div className="flex items-center gap-2 bg-gradient-to-br from-[#fc00ff]/10 to-[#00dbde]/10 p-4 rounded-xl">
           <DiamondOutlinedIcon className="text-[#fc00ff]" />
           <span className="text-sm font-medium">Luxury Quality</span>
@@ -108,19 +144,31 @@ export default function CollectionDetails() {
       </div>
 
       {/* Products */}
-      <div className="mt-4 md:mt-8">
+      <div 
+        ref={productsRef}
+        className={`mt-4 md:mt-8
+          ${productsEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+        `}
+      >
         <ProductList products={filteredProducts} />
       </div>
 
       {/* Filter */}
-      <ProductFilterSort 
-        categories={allCategories}
-        selectedSort={sort}
-        selectedCategories={selectedCategories}
-        onSortChange={setSort}
-        onCategoriesChange={setSelectedCategories}
-        collectionId={id}
-      />
+      <div 
+        ref={filterRef}
+        className={`mt-4 md:mt-8
+          ${filterEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+        `}
+      >
+        <ProductFilterSort 
+          categories={allCategories}
+          selectedSort={sort}
+          selectedCategories={selectedCategories}
+          onSortChange={setSort}
+          onCategoriesChange={setSelectedCategories}
+          collectionId={id}
+        />
+      </div>
     </div>
   );
 }

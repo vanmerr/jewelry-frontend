@@ -7,11 +7,13 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import FavoriteSharpIcon from "@mui/icons-material/FavoriteSharp";
 import ProductCard from "../components/ProductCard";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const product = products.find((p) => p.id === Number(id));
   const { addToCart } = useCart();
+
 
   // Xử lý màu sắc
   const [selectedColor, setSelectedColor] = useState(""); // Không chọn màu mặc định
@@ -319,6 +321,7 @@ export default function ProductDetail() {
         </div>
       </div>
 
+      {/* Related products */}
       {product.related && product.related.length > 0 && (
         <div className="max-w-5xl mx-auto mt-16 px-4 mb-8">
           <h2 className="font-serif text-2xl text-center font-bold mb-6 text-black">

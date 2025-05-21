@@ -7,10 +7,12 @@ import About from "./pages/About";
 import CollectionDetails from "./pages/CollectionDetails";
 import Explore from './pages/Explore';
 import ShippingBag from "./pages/ShippingBag";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="bg-white min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1">

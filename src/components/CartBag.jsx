@@ -31,16 +31,25 @@ export default function CartBag({ open, onClose, onViewBag }) {
       >
         {/* Header luxury */}
         <div className="relative flex flex-col items-center justify-center pt-10 pb-4 mb-2 px-8">
-          <h2 className="text-3xl font-serif font-bold tracking-wide text-center bg-gradient-to-br from-[#fc00ff] to-[#00dbde] bg-clip-text text-transparent drop-shadow-lg select-none">
-            SHOPPING BAG ({cart.length})
-          </h2>
+          {/* Mobile: Close button on the left */}
           <button
-            className="absolute right-6 top-6 text-2xl text-gray-400 hover:text-[#fc00ff] bg-white/70 rounded-full p-2 shadow transition-all duration-200"
+            className="absolute left-2 top-2 sm:hidden text-2xl text-gray-400 hover:text-[#fc00ff] bg-white/70 rounded-full p-2 shadow transition-all duration-200"
             onClick={onClose}
             aria-label="Close"
           >
             <CloseOutlinedIcon fontSize="inherit" />
           </button>
+          {/* Desktop: Close button on the right */}
+          <button
+            className="absolute right-6 top-6 hidden sm:block text-2xl text-gray-400 hover:text-[#fc00ff] bg-white/70 rounded-full p-2 shadow transition-all duration-200"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <CloseOutlinedIcon fontSize="inherit" />
+          </button>
+          <h2 className="text-3xl font-serif font-bold tracking-wide text-center bg-gradient-to-br from-[#fc00ff] to-[#00dbde] bg-clip-text text-transparent drop-shadow-lg select-none">
+            SHOPPING BAG ({cart.length})
+          </h2>
         </div>
         {/* Border gradient top */}
         <div className="h-1 w-full bg-gradient-to-r from-[#fc00ff]/60 via-white/0 to-[#00dbde]/60 mb-2" />
@@ -67,7 +76,7 @@ export default function CartBag({ open, onClose, onViewBag }) {
                         ${item.price.toLocaleString()}
                       </div>
                       <div className="flex items-center justify-between">
-                          {item.selectedColor && <div className="text-gray-500 text-sm">{item.selectedColor}</div>}
+                          {item.selectedColor  && <div className="text-gray-500 text-sm">Color: {item.selectedColor}</div>}
                           {item.selectedSize && <div className="text-gray-500 text-sm">Size: {item.selectedSize}</div>}
                           <div className="text-sm text-gray-600 mt-1">Quantity: <span className="font-semibold">{item.quantity}</span></div>
                       </div>
