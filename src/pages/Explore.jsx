@@ -3,7 +3,7 @@ import collections from "../services/collections";
 import products from "../services/products";
 import CollectionList from "../components/CollectionList";
 import ProductList from "../components/ProductList";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ProductFilterSort from "../components/ProductFilterSort";
 import { useIntersectionObserver } from "@uidotdev/usehooks";
 
@@ -19,11 +19,6 @@ export default function Explore() {
     rootMargin: "0px",
   });
 
-  const [listRef, listEntry] = useIntersectionObserver({
-    threshold: 0,
-    root: null,
-    rootMargin: "0px",
-  });
 
   const [heroRef, heroEntry] = useIntersectionObserver({
     threshold: 0,
@@ -31,19 +26,9 @@ export default function Explore() {
     rootMargin: "0px",
   });
 
-  const [productRef, productEntry] = useIntersectionObserver({
-    threshold: 0,
-    root: null,
-    rootMargin: "0px",
-  });
-
-  const [filterRef, filterEntry] = useIntersectionObserver({  
-    threshold: 0,
-    root: null,
-    rootMargin: "0px",
-  }); 
-
-  const [view, setView] = useState(viewParam === "collections" || viewParam === "products" ? viewParam : "all");
+  const [view, setView] = useState(
+    viewParam === "collections" || viewParam === "products" ? viewParam : "all"
+  );
 
   // Sync view with query param if it changes
   useEffect(() => {
@@ -60,35 +45,43 @@ export default function Explore() {
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   // Get all unique categories from products
-  const allCategories = [...new Set(products.map(p => p.category))];
+  const allCategories = [...new Set(products.map((p) => p.category))];
 
   // Simple search logic
-  const filteredCollections = collections.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.description?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCollections = useMemo(() => {
+    return collections.filter(
+      (c) =>
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.description?.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
 
   // Filter products based on search and filters
-  const filteredProducts = products.filter((p) => {
-    // Search filter
-    const matchesSearch = 
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.description?.toLowerCase().includes(search.toLowerCase());
+  const filteredProducts = useMemo(() => {
+    return products
+      .filter((p) => {
+        // Search filter
+        const matchesSearch =
+          p.name.toLowerCase().includes(search.toLowerCase()) ||
+          p.description?.toLowerCase().includes(search.toLowerCase());
 
-    // Status filter
-    const matchesStatus = !status || p.status === status;
+        // Status filter
+        const matchesStatus = !status || p.status === status;
 
-    // Category filter
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category);
+        // Category filter
+        const matchesCategory =
+          selectedCategories.length === 0 ||
+          selectedCategories.includes(p.category);
 
-    return matchesSearch && matchesStatus && matchesCategory;
-  }).sort((a, b) => {
-    // Sort by price
-    if (sort === "asc") return a.price - b.price;
-    if (sort === "desc") return b.price - a.price;
-    return 0;
-  });
+        return matchesSearch && matchesStatus && matchesCategory;
+      })
+      .sort((a, b) => {
+        // Sort by price
+        if (sort === "asc") return a.price - b.price;
+        if (sort === "desc") return b.price - a.price;
+        return 0;
+      });
+  }, [search, sort, status, selectedCategories]);
 
   // If searching, always show both
   const isSearching = search.trim().length > 0;
@@ -111,10 +104,14 @@ export default function Explore() {
     if (!collections.length) return null;
     const col = collections[idx];
     return (
-      <div 
+      <div
         ref={bannerRef}
-          className={`relative w-full h-[220px] md:h-[300px] rounded-2xl overflow-hidden mb-8 shadow-xl transition-all duration-2000
-          ${bannerEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+        className={`relative w-full h-[220px] md:h-[300px] rounded-2xl overflow-hidden mb-8 shadow-xl transition-all duration-2000
+          ${
+            bannerEntry?.isIntersecting
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10"
+          }
         `}
       >
         <img
@@ -145,10 +142,14 @@ export default function Explore() {
   };
   function HeroBanner({ image, title, subtitle }) {
     return (
-      <div 
+      <div
         ref={heroRef}
-         className={`relative w-full h-[220px] md:h-[300px] rounded-2xl overflow-hidden mb-8 shadow-xl transition-all duration-2000
-          ${heroEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+        className={`relative w-full h-[220px] md:h-[300px] rounded-2xl overflow-hidden mb-8 shadow-xl transition-all duration-2000
+          ${
+            heroEntry?.isIntersecting
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10"
+          }
         `}
       >
         <img
@@ -174,12 +175,7 @@ export default function Explore() {
       <h1 className="font-serif text-3xl font-bold text-center mb-8">
         Explore
       </h1>
-      <div 
-        ref={listRef}
-         className={`flex flex-col md:flex-row md:items-center gap-4 mb-8 transition-all
-          ${listEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
-        `}
-      >
+      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-8">
         <div className="flex gap-2 bg-white rounded-full shadow-lg p-1">
           {[
             { label: "All", value: "all" },
@@ -208,34 +204,31 @@ export default function Explore() {
             </button>
           ))}
         </div>
-        <div 
-          ref={filterRef}
-           className={`flex flex-col md:flex-row md:items-center gap-4 mb-8 transition-all duration-2000
-            ${filterEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
-          `}
-        >
-          <ProductFilterSort 
-            categories={allCategories}
-            selectedSort={sort}
-            selectedStatus={status}
-            selectedCategories={selectedCategories}
-            onSortChange={setSort}
-            onStatusChange={setStatus}
-            onCategoriesChange={setSelectedCategories}
-          />
-        </div>
+        <ProductFilterSort
+          categories={allCategories}
+          selectedSort={sort}
+          selectedStatus={status}
+          selectedCategories={selectedCategories}
+          onSortChange={setSort}
+          onStatusChange={setStatus}
+          onCategoriesChange={setSelectedCategories}
+        />
       </div>
       {/* Render logic */}
       {effectiveView === "collections" && (
         <>
           <CollectionBannerSlider collections={filteredCollections} />
-          <CollectionList collections={filteredCollections} />
+          <div className="transition-all duration-1000">
+            <CollectionList collections={filteredCollections} />
+          </div>
         </>
       )}
       {effectiveView === "products" && (
         <>
           <HeroBanner {...PRODUCT_BANNER} />
-          <ProductList products={filteredProducts} />
+          <div className="transition-all duration-1000">
+            <ProductList products={filteredProducts} />
+          </div>
         </>
       )}
       {effectiveView === "all" && (
@@ -244,19 +237,14 @@ export default function Explore() {
           <h2 className="font-serif text-2xl text-center font-bold mt-8 mb-6">
             Collections
           </h2>
+
           <CollectionList collections={filteredCollections} />
+
           <HeroBanner {...PRODUCT_BANNER} />
           <h2 className="font-serif text-2xl text-center font-bold mt-8 mb-6">
             Products
           </h2>
-          <div 
-            ref={productRef}
-             className={`mt-4 md:mt-8 transition-all duration-2000
-              ${productEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
-            `}
-          >
-            <ProductList  products={filteredProducts} />
-          </div>
+          <ProductList products={filteredProducts} />
         </>
       )}
     </div>

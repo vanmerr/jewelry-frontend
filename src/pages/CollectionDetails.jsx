@@ -11,11 +11,10 @@ import ProductList from "../components/ProductList";
 import { useState } from "react";
 import { useIntersectionObserver } from "@uidotdev/usehooks";
 
-
 export default function CollectionDetails() {
   const { id } = useParams();
   const collection = collections.find((c) => c.id === Number(id));
-  
+
   // Filter states
   const [sort, setSort] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -24,13 +23,15 @@ export default function CollectionDetails() {
   const collectionProducts = products.filter(
     (p) => p.collectionId === Number(id)
   );
-  const allCategories = [...new Set(collectionProducts.map(p => p.category))];
+  const allCategories = [...new Set(collectionProducts.map((p) => p.category))];
 
   // Filter and sort products
   const filteredProducts = collectionProducts
     .filter((p) => {
       // Category filter
-      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(p.category);
+      const matchesCategory =
+        selectedCategories.length === 0 ||
+        selectedCategories.includes(p.category);
       return matchesCategory;
     })
     .sort((a, b) => {
@@ -58,11 +59,6 @@ export default function CollectionDetails() {
     rootMargin: "0px",
   });
 
-  const [filterRef, filterEntry] = useIntersectionObserver({
-    threshold: 0,
-    root: null,
-    rootMargin: "0px",
-  });
 
   if (!collection) {
     return (
@@ -75,10 +71,14 @@ export default function CollectionDetails() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 mt-[56px]">
       {/* Collection Banner */}
-      <div 
+      <div
         ref={bannerRef}
         className={`relative w-full h-[300px] md:h-[400px] rounded-2xl overflow-hidden mb-8 shadow-xl
-          ${bannerEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+          ${
+            bannerEntry?.isIntersecting
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10"
+          }
         `}
       >
         <img
@@ -119,10 +119,14 @@ export default function CollectionDetails() {
       </div>
 
       {/* Collection Info */}
-      <div 
+      <div
         ref={infoRef}
         className={`grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 mb-12
-          ${infoEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+          ${
+            infoEntry?.isIntersecting
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10"
+          }
         `}
       >
         <div className="flex items-center gap-2 bg-gradient-to-br from-[#fc00ff]/10 to-[#00dbde]/10 p-4 rounded-xl">
@@ -144,31 +148,28 @@ export default function CollectionDetails() {
       </div>
 
       {/* Products */}
-      <div 
+      <div
         ref={productsRef}
         className={`mt-4 md:mt-8
-          ${productsEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+          ${
+            productsEntry?.isIntersecting
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-10"
+          }
         `}
       >
         <ProductList products={filteredProducts} />
       </div>
 
       {/* Filter */}
-      <div 
-        ref={filterRef}
-        className={`mt-4 md:mt-8
-          ${filterEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
-        `}
-      >
-        <ProductFilterSort 
-          categories={allCategories}
-          selectedSort={sort}
-          selectedCategories={selectedCategories}
-          onSortChange={setSort}
-          onCategoriesChange={setSelectedCategories}
-          collectionId={id}
-        />
-      </div>
+      <ProductFilterSort
+        categories={allCategories}
+        selectedSort={sort}
+        selectedCategories={selectedCategories}
+        onSortChange={setSort}
+        onCategoriesChange={setSelectedCategories}
+        collectionId={id}
+      />
     </div>
   );
 }

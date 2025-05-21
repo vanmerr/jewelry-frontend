@@ -1,4 +1,4 @@
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../contexts/useCart";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -26,30 +26,22 @@ export default function CartBag({ open, onClose, onViewBag }) {
     >
       {/* Slide-in panel luxury */}
       <div
-        className={`backdrop-blur-xl bg-white border-l-4 border-gradient-to-t from-[#fc00ff]/40 to-[#00dbde]/40 w-full max-w-md h-screen max-h-screen shadow-2xl p-0 relative flex flex-col transition-transform duration-500 ${open ? "translate-x-0" : "translate-x-full"} rounded-bl-3xl rounded-tl-3xl`}
+        className={`backdrop-blur-xl bg-white border-l-4 border-gradient-to-t from-[#fc00ff]/40 to-[#00dbde]/40 w-full max-w-md h-screen max-h-screen shadow-2xl p-0 relative flex flex-col transition-transform duration-500 ${open ? "translate-x-0" : "translate-x-full"} rounded-bl-3xl rounded-tl-3xl sm:rounded-bl-3xl sm:rounded-tl-3xl max-sm:rounded-none`}
         style={{ pointerEvents: "auto" }}
       >
         {/* Header luxury */}
         <div className="relative flex flex-col items-center justify-center pt-10 pb-4 mb-2 px-8">
-          {/* Mobile: Close button on the left */}
-          <button
-            className="absolute left-2 top-2 sm:hidden text-2xl text-gray-400 hover:text-[#fc00ff] bg-white/70 rounded-full p-2 shadow transition-all duration-200"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <CloseOutlinedIcon fontSize="inherit" />
-          </button>
-          {/* Desktop: Close button on the right */}
-          <button
-            className="absolute right-6 top-6 hidden sm:block text-2xl text-gray-400 hover:text-[#fc00ff] bg-white/70 rounded-full p-2 shadow transition-all duration-200"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <CloseOutlinedIcon fontSize="inherit" />
-          </button>
-          <h2 className="text-3xl font-serif font-bold tracking-wide text-center bg-gradient-to-br from-[#fc00ff] to-[#00dbde] bg-clip-text text-transparent drop-shadow-lg select-none">
-            SHOPPING BAG ({cart.length})
-          </h2>
+          <div className="relative">
+            <h2 className="text-3xl font-bold text-center py-6">SHOPPING BAG ({cart.length})</h2>
+          </div>
+            <button
+              className="absolute top-2 right-0 z-20 bg-white/80 rounded-full p-2 shadow hover:bg-pink-100 transition"
+              onClick={onClose}
+              aria-label="Close"
+              type="button"
+            >
+              <CloseOutlinedIcon fontSize="medium" />
+            </button>
         </div>
         {/* Border gradient top */}
         <div className="h-1 w-full bg-gradient-to-r from-[#fc00ff]/60 via-white/0 to-[#00dbde]/60 mb-2" />

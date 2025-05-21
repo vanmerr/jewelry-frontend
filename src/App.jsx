@@ -8,6 +8,7 @@ import CollectionDetails from "./pages/CollectionDetails";
 import Explore from './pages/Explore';
 import ShippingBag from "./pages/ShippingBag";
 import ScrollToTop from "./components/ScrollToTop";
+import Auth from "./pages/Auth";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Navbar />
         <main className="flex-1">
           <Routes> 
+            <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<Home />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/about" element={<About />} />

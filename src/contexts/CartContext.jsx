@@ -1,20 +1,8 @@
-import { createContext, useContext, useState } from "react";
-
-const CartContext = createContext();
+import { useState } from "react";
+import { CartContext } from "./CartContextContext";
+import { getStoredValue, normalizeColor } from "./cartHelpers";
 
 export function CartProvider({ children }) {
-  const getStoredValue = () => {
-    const stored = sessionStorage.getItem("carts");
-    if (stored !== null) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  };
-
   const [cart, setCart] = useState(getStoredValue);
 
   const updateCart = (newCart) => {
@@ -23,20 +11,18 @@ export function CartProvider({ children }) {
   };
 
   const addToCart = (item) => {
-    // Đảm bảo selectedColor luôn là 'Default' nếu rỗng
-    const normalizedColor = item.selectedColor === undefined || item.selectedColor === '' ? 'Default' : item.selectedColor;
-    // Match by id, selectedColor, selectedSize
+    const normalizedColor = normalizeColor(item.selectedColor);
     const exists = cart.find(
       (p) =>
         p.id === item.id &&
-        ((p.selectedColor === undefined || p.selectedColor === '') ? 'Default' : p.selectedColor) === normalizedColor &&
+        normalizeColor(p.selectedColor) === normalizedColor &&
         (p.selectedSize || "") === (item.selectedSize || "")
     );
     let updatedCart;
     if (exists) {
       updatedCart = cart.map((p) =>
         p.id === item.id &&
-        ((p.selectedColor === undefined || p.selectedColor === '') ? 'Default' : p.selectedColor) === normalizedColor &&
+        normalizeColor(p.selectedColor) === normalizedColor &&
         (p.selectedSize || "") === (item.selectedSize || "")
           ? { ...p, quantity: (p.quantity || 1) + 1 }
           : p
@@ -48,12 +34,12 @@ export function CartProvider({ children }) {
   };
 
   const removeFromCart = (id, selectedColor, selectedSize) => {
-    const normalizedColor = selectedColor === undefined || selectedColor === '' ? 'Default' : selectedColor;
+    const normalizedColor = normalizeColor(selectedColor);
     const updatedCart = cart.filter(
       (p) =>
         !(
           p.id === id &&
-          ((p.selectedColor === undefined || p.selectedColor === '') ? 'Default' : p.selectedColor) === normalizedColor &&
+          normalizeColor(p.selectedColor) === normalizedColor &&
           (p.selectedSize || "") === (selectedSize || "")
         )
     );
@@ -64,13 +50,12 @@ export function CartProvider({ children }) {
     updateCart([]);
   };
 
-  // Hàm cập nhật số lượng sản phẩm theo id, color, size
   const updateQuantity = (id, selectedColor, selectedSize, change) => {
-    const normalizedColor = selectedColor === undefined || selectedColor === '' ? 'Default' : selectedColor;
+    const normalizedColor = normalizeColor(selectedColor);
     const updatedCart = cart.map((item) => {
       if (
         item.id === id &&
-        ((item.selectedColor === undefined || item.selectedColor === '') ? 'Default' : item.selectedColor) === normalizedColor &&
+        normalizeColor(item.selectedColor) === normalizedColor &&
         (item.selectedSize || "") === (selectedSize || "")
       ) {
         return { ...item, quantity: Math.max(1, (item.quantity || 1) + change) };
@@ -85,9 +70,4 @@ export function CartProvider({ children }) {
       {children}
     </CartContext.Provider>
   );
-}
-
-
-export function useCart() {
-  return useContext(CartContext);
 }

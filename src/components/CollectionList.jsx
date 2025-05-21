@@ -1,13 +1,21 @@
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import CollectionCard from "./CollectionCard";
 
 export default function CollectionList({ collections }) {
   const [page, setPage] = useState(1);
   const collectionsPerPage = 4;
+  const listRef = useRef(null);
 
   useEffect(() => {
     setPage(1);
   }, [collections]);
+
+  // Scroll to top of list when page changes
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [page]);
 
   // Lấy danh sách collection theo trang
   const indexOfLast = page * collectionsPerPage;
@@ -31,7 +39,7 @@ export default function CollectionList({ collections }) {
   }
 
   return (
-    <div className="relative flex flex-col gap-10 mb-4">
+    <div ref={listRef} className="relative flex flex-col gap-10 mb-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {currentCollections.map((collection, idx) => (
           <CollectionCard key={collection.id + '-' + idx} collection={collection} />

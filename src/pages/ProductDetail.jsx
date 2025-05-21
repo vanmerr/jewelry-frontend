@@ -1,8 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import products from "../services/products";
 import ProductGallery from "../components/ProductGallery";
-import { useState, useEffect, useRef } from "react";
-import { useCart } from "../contexts/CartContext";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useCart } from "../contexts/useCart";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import FavoriteSharpIcon from "@mui/icons-material/FavoriteSharp";
 import ProductCard from "../components/ProductCard";
@@ -17,15 +17,27 @@ export default function ProductDetail() {
 
   // Xử lý màu sắc
   const [selectedColor, setSelectedColor] = useState(""); // Không chọn màu mặc định
-  const colorObj =
-    product?.colors?.find((c) => c.color === selectedColor) || null;
+  const colorObj = useMemo(
+    () => product?.colors?.find((c) => c.color === selectedColor) || null,
+    [product, selectedColor]
+  );
 
   // Lấy images, price, sizes theo màu nếu có, nếu không lấy mặc định
-  const images = colorObj?.images?.length
-    ? colorObj.images
-    : product?.images || [];
-  const price = colorObj?.price || product?.price;
-  const sizes = colorObj?.sizes?.length ? colorObj.sizes : product?.sizes || [];
+  const images = useMemo(
+    () =>
+      colorObj?.images?.length
+        ? colorObj.images
+        : product?.images || [],
+    [colorObj, product]
+  );
+  const price = useMemo(
+    () => colorObj?.price || product?.price,
+    [colorObj, product]
+  );
+  const sizes = useMemo(
+    () => (colorObj?.sizes?.length ? colorObj.sizes : product?.sizes || []),
+    [colorObj, product]
+  );
 
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedImage, setSelectedImage] = useState(images?.[0] || "");
@@ -65,7 +77,7 @@ export default function ProductDetail() {
     setSelectedImage(images?.[0] || "");
     setSelectedSize("");
     setThumbStart(0);
-  }, [selectedColor]);
+  }, [selectedColor, images]);
 
   useEffect(() => {
     // Kiểm tra xem mô tả có bị cắt dòng không
@@ -76,35 +88,57 @@ export default function ProductDetail() {
     }
   }, [product.description]);
 
+  // refs & entries cho các section
+  const [breadcrumbsRef, breadcrumbsEntry] = useIntersectionObserver({ threshold: 0 });
+  const [galleryRef, galleryEntry] = useIntersectionObserver({ threshold: 0 });
+  const [infoRef, infoEntry] = useIntersectionObserver({ threshold: 0 });
+  const [relatedRef, relatedEntry] = useIntersectionObserver({ threshold: 0 });
+  const [serviceRef, serviceEntry] = useIntersectionObserver({ threshold: 0 });
+  const [likeRef, likeEntry] = useIntersectionObserver({ threshold: 0 });
+  const [highlightRef, highlightEntry] = useIntersectionObserver({ threshold: 0 });
+  
+
   if (!product)
     return <div className="p-8 text-center">Product not found.</div>;
 
   return (
     <div className="max-w-5xl mx-auto mt-[56px] py-12 px-4">
-      <Breadcrumbs
-        aria-label="breadcrumb"
-        className="flex justify-center items-center h-10"
+      <div 
+        ref={breadcrumbsRef}
+        className={`transition-all duration-1000 ${
+          breadcrumbsEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}
       >
-        <Link
-          to="/"
-          className="relative text-gray-400 hover:text-gray-800 font-light group"
+        <Breadcrumbs
+          aria-label="breadcrumb"
+          className="flex justify-center items-center h-10"
         >
-          <span> Home</span>
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-br from-[#fc00ff] to-[#00dbde] transition-all group-hover:w-full"></span>
-        </Link>
-        <Link
-          to="/collections"
-          className="relative text-gray-400 hover:text-gray-800 font-light group"
-        >
-          <span>All Collection</span>
-          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-br from-[#fc00ff] to-[#00dbde] transition-all group-hover:w-full"></span>
-        </Link>
+          <Link
+            to="/"
+            className="relative text-gray-400 hover:text-gray-800 font-light group"
+          >
+            <span> Home</span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-br from-[#fc00ff] to-[#00dbde] transition-all group-hover:w-full"></span>
+          </Link>
+          <Link
+            to="/collections"
+            className="relative text-gray-400 hover:text-gray-800 font-light group"
+          >
+            <span>All Collection</span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-br from-[#fc00ff] to-[#00dbde] transition-all group-hover:w-full"></span>
+          </Link>
 
-        <span className="text-gray-800">{product.name}</span>
-      </Breadcrumbs>
+          <span className="text-gray-800">{product.name}</span>
+        </Breadcrumbs>
+      </div>
       <div className="max-w-5xl mx-auto px-4 mt-2 flex flex-col md:flex-row gap-12">
         {/* Gallery */}
-        <div className="flex-1 flex flex-col gap-4 relative">
+        <div 
+          ref={galleryRef}
+          className={`flex-1 flex flex-col gap-4 relative transition-all duration-1000 ${
+            galleryEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
           <ProductGallery image={selectedImage} />
           <span className="absolute right-2 top-2 bg-gradient-to-br from-[#fc00ff]/70 to-[#00dbde]/70 text-xs font-bold px-2 py-1 rounded shadow-lg z-20 animate-bounce">
             <FavoriteSharpIcon className="text-[#fc00ff]" />
@@ -179,7 +213,12 @@ export default function ProductDetail() {
           )}
         </div>
         {/* Info */}
-        <div className="relative flex-1 flex flex-col gap-6">
+        <div 
+          ref={infoRef}
+          className={`relative flex-1 flex flex-col gap-6 transition-all duration-1000 ${
+            infoEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
           <h1 className="font-serif text-3xl font-bold text-black">
             {product.name}
           </h1>
@@ -220,7 +259,7 @@ export default function ProductDetail() {
                   <CloseOutlinedIcon />
                 </button>
                 <div
-                  className="text-lg text-gray-700 whitespace-pre-line max-h-[60vh] overflow-y-auto"
+                  className="text-lg text-gray-700 whitespace-pre-line max-h-[60vh] overflow-y-auto hide-scrollbar"
                   style={{
                     scrollbarWidth: "none", // Firefox
                     msOverflowStyle: "none", // IE 10+
@@ -234,7 +273,7 @@ export default function ProductDetail() {
                       }
                     `}
                   </style>
-                  <div className="hide-scrollbar">{product.description}</div>
+                  <div>{product.description}</div>
                 </div>
               </div>
             </div>
@@ -297,10 +336,6 @@ export default function ProductDetail() {
             <button
               className="bg-black flex-1 text-white hover:bg-gradient-to-br from-[#fc00ff] to-[#00dbde] px-6 py-3 rounded font-semibold transition hover:bg-pink-600"
               onClick={() => {
-                if (sizes?.length && !selectedSize) {
-                  alert("Please select size before adding to cart!");
-                  return;
-                }
                 addToCart({
                   ...product,
                   selectedColor, // if not selected, will be "" (default)
@@ -322,26 +357,35 @@ export default function ProductDetail() {
       </div>
 
       {/* Related products */}
-      {product.related && product.related.length > 0 && (
-        <div className="max-w-5xl mx-auto mt-16 px-4 mb-8">
-          <h2 className="font-serif text-2xl text-center font-bold mb-6 text-black">
-            Related Creations
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {product.related
-              .map((relId) => products.find((p) => p.id === relId))
-              .filter(Boolean)
-              .map((relProduct) => (
-                <div key={relProduct.id}>
-                  <ProductCard product={relProduct} onAddToCart={addToCart} />
-                </div>
-              ))}
+      <div 
+        ref={relatedRef}
+        className={`mt-16 transition-all duration-1000 ${
+          relatedEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        }`}
+      >
+        {product.related && product.related.length > 0 && (
+          <div className="max-w-5xl mx-auto px-4 mb-8">
+            <h2 className="font-serif text-2xl text-center font-bold mb-6 text-black">
+              Related Creations
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {product.related
+                .map((relId) => products.find((p) => p.id === relId))
+                .filter(Boolean)
+                .map((relProduct) => (
+                  <div key={relProduct.id}>
+                    <ProductCard product={relProduct} onAddToCart={addToCart} />
+                  </div>
+                ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Service Info Section */}
-      <div className="max-w-5xl mx-auto mt-16 px-4 mb-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div ref={serviceRef}  className={`max-w-5xl mx-auto mt-16 px-4 mb-8 grid grid-cols-1 md:grid-cols-2 gap-8 transition-all duration-1000 ${
+        serviceEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}>
         {/* Gift Wrapping */}
         <div className="flex bg-[#fafafa] rounded shadow overflow-hidden">
           <img
@@ -393,7 +437,9 @@ export default function ProductDetail() {
       </div>
 
       {/* You may also like section */}
-      <div className="max-w-5xl mx-auto mt-16 px-4 mb-8">
+      <div ref={likeRef}  className={`max-w-5xl mx-auto mt-16 px-4 mb-8 transition-all duration-1000 ${
+        likeEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      }`}>
         <h2 className="font-serif text-2xl text-center font-bold mb-6 text-black">
           You may also like
         </h2>
@@ -444,7 +490,9 @@ export default function ProductDetail() {
             </span>
           </div>
           {/* Easy Return or Exchange */}
-          <div className="flex flex-col items-center">
+          <div ref={highlightRef} className={`flex flex-col items-center transition-all duration-1000 ${
+            highlightEntry?.isIntersecting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}>
             {/* Icon */}
             <svg
               width="48"

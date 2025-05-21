@@ -7,7 +7,8 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Link } from "react-router-dom";
 import AddToCartModal from "./AddToCartModal";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../contexts/useCart";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
@@ -15,6 +16,12 @@ export default function ProductCard({ product }) {
   const [slideDir, setSlideDir] = useState("right");
   const [liked, setLiked] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const [cardRef, cardEntry] = useIntersectionObserver({
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
 
   const images =
     product.images && product.images.length > 0
@@ -44,17 +51,20 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="
-      relative 
+      ref={cardRef}
+      className={`relative 
       w-full max-w-[250px] h-[370px]
       bg-black flex flex-col
-      rounded-2xl cursor-pointer group
-      transition-shadow shadow-lg hover:shadow-2xl
+      rounded-2xl cursor-pointer groupshadow-lg hover:shadow-2xl
       mx-auto
       sm:max-w-[220px] sm:h-[320px]
       md:max-w-[240px] md:h-[340px]
       lg:max-w-[250px] lg:h-[350px]
-    "
+      transition-all duration-1000 ${
+        cardEntry?.isIntersecting
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-10"
+      }`}
     >
       {/* Gradient border effect */}
       <div className="absolute inset-0 w-full h-full rounded-2xl z-0 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] bg-gradient-to-br from-[#e81cff] to-[#40c9ff] group-hover:rotate-[-180deg]" />
@@ -159,7 +169,7 @@ export default function ProductCard({ product }) {
               ${product.price.toLocaleString()}
             </span>
             <button
-              className="hidden group-hover:flex items-center gap-1 bg-gradient-to-br cursor-pointer from-[#fc00ff] to-[#00dbde] text-white px-3 py-1 rounded hover:scale-105 transition"
+              className="hidden max-sm:flex group-hover:flex items-center gap-1 bg-gradient-to-br cursor-pointer from-[#fc00ff] to-[#00dbde] text-white px-3 py-1 rounded hover:scale-105 transition"
               onClick={(e) => {
                 e.preventDefault();
                 setShowModal(true);
@@ -196,4 +206,3 @@ export default function ProductCard({ product }) {
     </div>
   );
 }
-

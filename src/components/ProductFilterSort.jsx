@@ -85,7 +85,7 @@ export default function ProductFilterSort({
     if (onSortChange) onSortChange("");
     if (onStatusChange) onStatusChange("");
     if (onCategoriesChange) onCategoriesChange([]);
-  }, [location.pathname, collectionId]);
+  }, [location.pathname, collectionId, onSortChange, onStatusChange, onCategoriesChange]);
 
   return (
     <div>

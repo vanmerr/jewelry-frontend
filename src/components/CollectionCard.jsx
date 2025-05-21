@@ -3,21 +3,31 @@ import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
 import DiamondOutlinedIcon from "@mui/icons-material/DiamondOutlined";
 import EmojiEventsOutlinedIcon from "@mui/icons-material/EmojiEventsOutlined";
 import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
 
 export default function ConllectionCard({ collection }) {
+  const [cardRef, cardEntry] = useIntersectionObserver({
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
   return (
     <div
-      className="
-      relative 
+      ref={cardRef}
+      className={`relative 
       w-full max-w-[250px] h-[320px] 
       bg-black flex flex-col justify-end gap-3 
       rounded-lg cursor-pointer group 
-      transition-shadow shadow-lg hover:shadow-2xl
+      shadow-lg hover:shadow-2xl
       mx-auto
       sm:max-w-[220px] sm:h-[280px]
       md:max-w-[240px] md:h-[300px]
       lg:max-w-[250px] lg:h-[300px]
-    "
+      transition-all duration-1000 ${
+        cardEntry?.isIntersecting
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-10"
+      }`}
     >
       {/* Gradient border effect */}
       <div className="absolute inset-0 w-full h-full rounded-xl z-0 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] bg-gradient-to-br from-[#e81cff] to-[#40c9ff] group-hover:rotate-[-180deg]" />

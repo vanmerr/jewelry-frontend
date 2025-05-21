@@ -6,7 +6,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import Badge from "@mui/material/Badge";
 import TextField from "@mui/material/TextField";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../contexts/useCart";
 import CartBag from "./CartBag";
 
 export default function Navbar() {
@@ -68,19 +68,20 @@ export default function Navbar() {
         <div className="flex items-center gap-4 lg:gap-2">
           <button
             title="Cart"
-            className="rounded-full bg-white/80 hover:bg-gradient-to-br hover:from-[#fc00ff]/20 hover:to-[#00dbde]/20 shadow-md p-2 transition-all duration-200 relative group"
+            className="rounded-full bg-white/80 cursor-pointer hover:bg-gradient-to-br hover:from-[#fc00ff]/20 hover:to-[#00dbde]/20 shadow-md p-2 transition-all duration-200 relative group"
             onClick={() => setCartOpen(true)}
           >
             <Badge badgeContent={cart.length} color="error">
               <ShoppingCartOutlinedIcon className="text-[#fc00ff] group-hover:scale-110 transition-transform duration-200" />
             </Badge>
           </button>
-          <button
+          <Link
+            to="/auth"
             title="User"
-            className="rounded-full bg-white/80 hover:bg-gradient-to-br hover:from-[#fc00ff]/20 hover:to-[#00dbde]/20 shadow-md p-2 transition-all duration-200 relative group max-sm:hidden"
+            className="rounded-full bg-white/80 cursor-pointer hover:bg-gradient-to-br hover:from-[#fc00ff]/20 hover:to-[#00dbde]/20 shadow-md p-2 transition-all duration-200 relative group max-sm:hidden"
           >
             <PersonOutlineOutlinedIcon className="text-[#00dbde] group-hover:scale-110 transition-transform duration-200" fontSize="medium" />
-          </button>
+          </Link>
           <button
             className="lg:hidden md:block focus:outline-none rounded-full p-2 bg-white/80 shadow-md"
             onClick={() => setOpen(!open)}
